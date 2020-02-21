@@ -1,0 +1,14 @@
+{
+    "name": "disday/php-project",
+    "authors": [
+        {
+            "name": "Temin Dmitrii",
+            "email": "disdain44@yandex.ru"
+        }
+    ],
+    "require": {
+        "slim/slim": "^4.4",
+        "slim/psr7": "^1.0",
+        "slim/http": "^1.0"
+    }
+}
