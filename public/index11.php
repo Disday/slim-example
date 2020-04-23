@@ -5,7 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Slim\Factory\AppFactory;
 
 
-// $faker = \Faker\Factory::create();
+$faker = \Faker\Factory::create();
 // $faker->seed(1234);
 
 // $domains = [];
