@@ -1,0 +1,24 @@
+<style>
+  table {
+    font-size: 22px;
+  }
+  a {
+    font-size: 22px;
+  }
+  td,
+  th {
+    border: 1px solid #000;
+  }
+</style>
+
+<table>
+  <th>id</th>
+  <th>firstName</th>
+  <?php
+  foreach ($users as ['id' => $id, 'firstName' => $name]) { ?>
+    <tr>
+      <td><?= $id ?></td>
+      <td><a href='users/<?= $id ?>'><?= $name ?></a></td>
+    </tr>
+  <?php } ?>
+</table>

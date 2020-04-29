@@ -13,6 +13,9 @@
         "slim/slim": "^4.4",
         "slim/psr7": "^1.0",
         "slim/http": "^1.0",
-        "fzaninotto/faker": "^1.9"
+        "fzaninotto/faker": "^1.9",
+        "tightenco/collect": "^7.6",
+        "slim/php-view": "^2.2",
+        "php-di/php-di": "^6.1"
     }
 }

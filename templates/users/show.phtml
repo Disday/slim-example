@@ -1,0 +1,23 @@
+<a href="/users">Пользователи</a>
+
+<style>
+  table {
+    font-size: 22px;
+  }
+  a {
+    font-size: 22px;
+  }
+  td,
+  th {
+    border: 1px solid #000;
+  }
+</style>
+
+<table>
+  <?php foreach ($user as $key => $value) { ?>
+    <tr>
+      <th><?= $key ?>
+      <td><?= $value ?>
+    </tr>
+  <?php } ?>
+</table>
