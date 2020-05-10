@@ -1,60 +1,49 @@
-
 <?php
-require __DIR__ . '/../vendor/autoload.php';
 
+use App\Validator;
 use Slim\Factory\AppFactory;
 use DI\Container;
 
-use function Funct\Object\toArray;
-use function Funct\Strings\toLower;
+require __DIR__ . '/../vendor/autoload.php';
 
-$users = App\Generator::generate(100);
+$repo = new App\Repository();
 
 $container = new Container();
 $container->set('renderer', function () {
-  return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
+    return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
 });
 
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
 
-$app->get('/users/new', function ($request, $response, $args) {
-  return $this->get('renderer')->render($response, '/users/new.phtml');
-});
-$app->post('/users', function ($request, $response) {
-  $user = $request->getParsedBodyParam('user');
-  $users = explode("\n", file_get_contents('1.txt'));
-  $users = collect($users);
-  $users->pop();
-  $lastUser = $users->last();
-  $lastId = json_decode($lastUser)->id;
-  $user['id'] = $lastId + 1;
-  $newUser = json_encode($user) . "\n";
-  file_put_contents('1.txt', $newUser , FILE_APPEND);
-  return $response->withRedirect('/users/new', 302);
-});
-$app->get('/users', function ($request, $response) {
-  $params['file'] = file_get_contents('1.txt');
-  return $this->get('renderer')->render($response, '/users/index.phtml', $params);
+$app->get('/', function ($request, $response) {
+    return $this->get('renderer')->render($response, 'index.phtml');
 });
 
-/*
-$app->get('/users', function ($request, $response) use ($users) {
-  $term = $request->getQueryParam('term');
-  if ($term != null) {
-    $users = array_filter($users, function ($user) use ($term) {
-      return strpos(strtolower($user['firstName']), $term) === 0 ? true : false; 
-    });
+$app->get('/courses', function ($request, $response) use ($repo) {
+    $params = [
+        'courses' => $repo->all()
+    ];
+    return $this->get('renderer')->render($response, 'courses/index.phtml', $params);
+});
+
+// BEGIN (write your solution here)
+$app->get('/courses/new', function ($request, $response) {
+  return $this->get('renderer')->render($response, 'courses/new.phtml');
+});
+$app->post('/courses', function ($request, $response) use ($repo) {
+  $course = $request->getParsedBodyParam('course');
+  $validator = new App\Validator();
+  $errors = $validator->validate($course);
+  if (empty($errors)){
+    $repo->save($course);
+    return $response->withRedirect('/courses', 302);
   }
-  $params = compact('users', 'term');
-  return $this->get('renderer')->render($response, 'users/index.phtml', $params);
-});*/
+  $params = ['errors' => $errors, 'course' => $course];  
+  $response = $response->withStatus(422);
+  return $this->get('renderer')->render($response, 'courses/new.phtml', $params);
+});
+// END
 
-
-
-$app->run(); ?>
-
-
-
-
+$app->run();

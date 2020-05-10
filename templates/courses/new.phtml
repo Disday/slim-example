@@ -1,0 +1,16 @@
+<form action='/courses' method='post'>
+  Paid?
+  <select size='1' name='course[paid]'>
+    <option value="1">True</option>
+    <option value="0">False</option>
+  </select>
+  <?php echo $errors['paid'] ?? null; ?>
+  <br>
+  Title
+  <input value=" <?php 
+  if (!empty($course)) {
+      echo htmlspecialchars($course['title']);      
+   } ?>"
+      type='text' name="course[title]">
+  <?php echo $errors['title'] ?? null; ?>
+</form>
