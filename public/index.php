@@ -6,44 +6,60 @@ use DI\Container;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$repo = new App\Repository();
-
 $container = new Container();
 $container->set('renderer', function () {
-    return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
+  return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
 });
 
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
+$router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function ($request, $response) {
-    return $this->get('renderer')->render($response, 'index.phtml');
-});
+  return $this->get('renderer')->render($response, 'index.phtml');
+})->setName('index');
 
-$app->get('/courses', function ($request, $response) use ($repo) {
-    $params = [
-        'courses' => $repo->all()
-    ];
-    return $this->get('renderer')->render($response, 'courses/index.phtml', $params);
-});
+$app->get('/users', function ($request, $response) use ($router) {
+  $params['file'] = file_get_contents('users.json');
+  $params['router'] = $router;
+  return $this->get('renderer')->render($response, "users/index.phtml", $params);
+})->setName('users');
 
-// BEGIN (write your solution here)
-$app->get('/courses/new', function ($request, $response) {
-  return $this->get('renderer')->render($response, 'courses/new.phtml');
-});
-$app->post('/courses', function ($request, $response) use ($repo) {
-  $course = $request->getParsedBodyParam('course');
-  $validator = new App\Validator();
-  $errors = $validator->validate($course);
-  if (empty($errors)){
-    $repo->save($course);
-    return $response->withRedirect('/courses', 302);
+$app->get("/users/new", function ($request, $response, $args) use ($router) {
+  $params['router'] = $router;
+  return $this->get('renderer')->render($response, "users/new.phtml", $params);
+})->setName('newUser');
+
+$app->get('/users/{id}', function ($request, $response, $args) use ($router) {
+  $users = explode("\n", file_get_contents('users.json'));
+  $id = $args['id'];
+  $user = collect($users)->map(function ($item, $key) {
+    return json_decode($item);
+  })->firstWhere('id', $id);
+  if (empty($user)) {
+    $response = $response->withStatus(404);
   }
-  $params = ['errors' => $errors, 'course' => $course];  
-  $response = $response->withStatus(422);
-  return $this->get('renderer')->render($response, 'courses/new.phtml', $params);
+  $params = ['user' => $user, 'router' => $router];
+  return $this->get('renderer')->render($response, "users/show.phtml", $params);
+})->setName('user');
+
+$app->post('/users', function ($request, $response) use ($router) {
+  $user = $request->getParsedBodyParam('user');
+  $users = explode("\n", file_get_contents('users.json'));
+  $users = collect($users);
+  $users->pop();
+  $lastUser = $users->last();
+  $lastId = json_decode($lastUser)->id;
+  $user['id'] = $lastId + 1;
+  $newUser = json_encode($user) . "\n";
+  file_put_contents('users.json', $newUser, FILE_APPEND);
+  return $response->withRedirect($router->urlFor('newUser'), 302);
 });
+
+
+
+
 // END
 
 $app->run();
