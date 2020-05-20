@@ -5,10 +5,13 @@ use Slim\Factory\AppFactory;
 use DI\Container;
 
 require __DIR__ . '/../vendor/autoload.php';
-
+session_start();
 $container = new Container();
 $container->set('renderer', function () {
   return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
+});
+$container->set('flash', function () {
+  return new \Slim\Flash\Messages();
 });
 
 AppFactory::setContainer($container);
@@ -21,6 +24,7 @@ $app->get('/', function ($request, $response) {
 })->setName('index');
 
 $app->get('/users', function ($request, $response) use ($router) {
+  $params['messages'] = $this->get('flash')->getMessages();
   $params['file'] = file_get_contents('users.json');
   $params['router'] = $router;
   return $this->get('renderer')->render($response, "users/index.phtml", $params);
@@ -54,7 +58,8 @@ $app->post('/users', function ($request, $response) use ($router) {
   $user['id'] = $lastId + 1;
   $newUser = json_encode($user) . "\n";
   file_put_contents('users.json', $newUser, FILE_APPEND);
-  return $response->withRedirect($router->urlFor('newUser'), 302);
+  $this->get('flash')->addMessage('success', 'User added');  
+  return $response->withRedirect($router->urlFor('users'), 302);
 });
 
 

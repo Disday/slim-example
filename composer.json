@@ -16,6 +16,7 @@
         "fzaninotto/faker": "^1.9",
         "tightenco/collect": "^7.6",
         "slim/php-view": "^2.2",
-        "php-di/php-di": "^6.1"
+        "php-di/php-di": "^6.1",
+        "slim/flash": "^0.4.0"
     }
 }

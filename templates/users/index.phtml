@@ -2,19 +2,21 @@
   table {
     font-size: 22px;
   }
-
   a {
     font-size: 22px;
   }
-
   td,
   th {
     border: 1px solid #000;
   }
 </style>
 
-<form action=<?=$router->urlFor('users')?> method="get">
-  <input type="search" value="<?= $term ?>"  name="term">
-  <input type="submit" value="Кнопка">
+<div style="color:red" ><?=$messages['success'][0]?></div>
+<div><a href=<?=$router->urlFor('newUser')?>>Add new user</a></div>
+<br>
+<form action=<?= $router->urlFor('users') ?> method="get">
+  <input type="search" value="<?= $term ?>" name="term">
+  <input type="submit" value="Filter">
 </form>
-<?php print_r($file);
+<?php 
+print_r($file);
