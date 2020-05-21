@@ -25,8 +25,11 @@ $app->get('/', function ($request, $response) {
 
 $app->get('/users', function ($request, $response) use ($router) {
   $params['messages'] = $this->get('flash')->getMessages();
-  $params['file'] = file_get_contents('users.json');
   $params['router'] = $router;
+  $users = explode("\n", file_get_contents('users.json'));
+  // $users = collect($users);
+  $params['users'] = $users;
+
   return $this->get('renderer')->render($response, "users/index.phtml", $params);
 })->setName('users');
 
@@ -42,7 +45,9 @@ $app->get('/users/{id}', function ($request, $response, $args) use ($router) {
     return json_decode($item);
   })->firstWhere('id', $id);
   if (empty($user)) {
-    $response = $response->withStatus(404);
+    $this->get('flash')->addMessage('error', 'User does not exist');
+    // $response = $response->withStatus(404);
+    return $response->withRedirect($router->urlFor('users'), 404);
   }
   $params = ['user' => $user, 'router' => $router];
   return $this->get('renderer')->render($response, "users/show.phtml", $params);
@@ -50,6 +55,14 @@ $app->get('/users/{id}', function ($request, $response, $args) use ($router) {
 
 $app->post('/users', function ($request, $response) use ($router) {
   $user = $request->getParsedBodyParam('user');
+  $validator = new Validator();
+  $errors = $validator->validate($user);
+  $params['errors'] = $errors;
+  if (!empty($errors)) {
+    return $this->get('renderer')->render($response, "users/new.phtml", $params);
+  }
+  file_put_contents('log.json', json_encode($errors));
+
   $users = explode("\n", file_get_contents('users.json'));
   $users = collect($users);
   $users->pop();
@@ -58,7 +71,7 @@ $app->post('/users', function ($request, $response) use ($router) {
   $user['id'] = $lastId + 1;
   $newUser = json_encode($user) . "\n";
   file_put_contents('users.json', $newUser, FILE_APPEND);
-  $this->get('flash')->addMessage('success', 'User added');  
+  $this->get('flash')->addMessage('success', 'User added');
   return $response->withRedirect($router->urlFor('users'), 302);
 });
 

@@ -2,8 +2,8 @@
 ?>
 
 <form action='/users' method="post">
-  Nickname
-  <input type="text" value=""   name="user[nickname]">
+  Nickname<input type="text" value=""   name="user[nickname]">
+  <?=$errors['nickname']?>
   <br>
   Email
   <input type="text" value=""   name="user[email]">
