@@ -7,23 +7,41 @@
   }
   td,
   th {
-    border: 1px solid #000;
+    border: none;
   }
 </style>
 
-<div style="color:green" ><?=$messages['success'][0]?></div>
-<div style="color:red" ><?=$messages['error'][0]?></div>
+<div style="color:green"><?= $messages['success'][0] ?></div>
+<div style="color:red"><?= $messages['error'][0] ?></div>
 
-<div><a href=<?=$router->urlFor('newUser')?>>Add new user</a></div>
+<div><a href=<?= $router->urlFor('newUser') ?>>Add new user</a></div>
 <br>
 <form action=<?= $router->urlFor('users') ?> method="get">
   <input type="search" value="<?= $term ?>" name="term">
   <input type="submit" value="Filter">
 </form>
-<ul>
-<?php foreach ($users as $user) {
-  echo $user . "<br>";
-}?>
-</ul>
-<?php 
-// print_r($file);
+<table style="border-collapse:collapse; border-spacing: 0"  >
+  <th>Name</th>
+  <th>Email</th>
+  <th>Id</th>
+
+  <?php foreach ($users as $user) :
+    if (strpos($user, $term) || $term == '') {
+      $user = json_decode($user);
+      $name = htmlspecialchars($user->nickname);
+      $email = htmlspecialchars($user->email); 
+      $id = $user->id;
+      $userLink = "{$router->urlFor('users')}/{$user->id}";
+      // var_dump($id)
+      ?>
+      <tr>
+        <td><a href="<?=$userLink?>"><?=$name?></td>
+        <td><?=$email?></td>
+        <td><?=$id?></td>
+      </tr>
+  <?php
+      // <!-- var_dump($user->nickname); -->
+      // echo htmlspecialchars($user) . "<br>";
+    }
+  endforeach; ?>
+</table>

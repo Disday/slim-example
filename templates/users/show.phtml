@@ -1,23 +1,27 @@
-<a href=<?=$router->urlFor('users')?>>Пользователи</a>
+<a href=<?= $router->urlFor('users') ?>>Пользователи</a>
 
 <style>
   table {
     font-size: 22px;
   }
+
   a {
     font-size: 22px;
   }
+
   td,
   th {
-    border: 1px solid #000;
+    border: none;
   }
 </style>
 
 <table>
-  <?php foreach ($user as $key => $value) { ?>
-    <tr>
-      <th><?= $key ?>
-      <td><?= $value ?>
-    </tr>
-  <?php } ?>
+  <th>Name</th>
+  <th>Email</th>
+  <th>Id</th>
+  <tr>
+    <td><?= htmlspecialchars($user->nickname) ?>
+    <td><?= htmlspecialchars($user->email) ?>
+    <td><?= $user->id ?>
+  </tr>
 </table>

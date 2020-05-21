@@ -24,12 +24,16 @@ $app->get('/', function ($request, $response) {
 })->setName('index');
 
 $app->get('/users', function ($request, $response) use ($router) {
-  $params['messages'] = $this->get('flash')->getMessages();
-  $params['router'] = $router;
+  $term = $request->getQueryParam('term');
+  // $response->write($term);
+  $params = [
+    'messages' => $this->get('flash')->getMessages(),
+    'router' => $router,
+    'term' => $term
+  ];
   $users = explode("\n", file_get_contents('users.json'));
   // $users = collect($users);
   $params['users'] = $users;
-
   return $this->get('renderer')->render($response, "users/index.phtml", $params);
 })->setName('users');
 
