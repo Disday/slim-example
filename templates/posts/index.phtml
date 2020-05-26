@@ -1,0 +1,12 @@
+<?php
+foreach ($posts as $post) :
+    $postLink = "{$router->urlFor('posts')}/{$post['id']}";
+    $postName = htmlspecialchars($post['name']);
+    echo "{$post['number']} - <a href='{$postLink}'>{$postName}" . '<br>';
+endforeach; ?>
+<br>
+
+<form method='get'>
+    <button name='page' value='<?=$page - 1?>'>Назад</button>
+    <button name='page' value='<?=$page + 1?>'>Вперёд</button>
+</form>

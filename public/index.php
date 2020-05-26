@@ -18,6 +18,8 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
 $router = $app->getRouteCollector()->getRouteParser();
+$repo = new App\PostRepository();
+
 
 $app->get('/', function ($request, $response) {
   return $this->get('renderer')->render($response, 'index.phtml');
@@ -79,8 +81,35 @@ $app->post('/users', function ($request, $response) use ($router) {
   return $response->withRedirect($router->urlFor('users'), 302);
 });
 
+// BEGIN (write your solution here)
+$app->get('/posts', function ($request, $response) use ($repo, $router) {
+  $page = $request->getQueryParam('page');
+  if ($page < 1) {
+    return $response->withRedirect('/posts?page=1');
+  }
+  $posts = collect($repo->all())->slice(($page - 1) * 5, 5);
+  file_put_contents('log.json', json_encode($page));
+  $params = [
+    'router' => $router,
+    'posts' => $posts,
+    'page' => $page
+  ];
+  return $this->get('renderer')->render($response, 'posts/index.phtml', $params);
+})->setName('posts');
 
-
+$app->get('/posts/{id}', function ($request, $response, $args) use ($router, $repo) {
+  $id = strval($args['id']);
+  $post = $repo->find($id);
+  if (empty($post)) {
+    return $response->withStatus(404)->write('Page not found');
+  }
+  // file_put_contents('log.json', json_encode($repo->find('asd')));
+  $params = [
+    'router' => $router,
+    'post' => $post
+  ];
+  return $this->get('renderer')->render($response, "posts/show.phtml", $params);
+})->setName('post');
 
 // END
 
