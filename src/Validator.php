@@ -4,9 +4,9 @@ namespace App;
 
 class Validator implements ValidatorInterface
 {
-    public function validate(array $array)
-    {
-        // BEGIN (write your solution here)
+  public function validate(array $array)
+  {
+    // BEGIN (write your solution here)
     $errors = [];
     // var_dump($course['title']);
     if ($array['paid'] === '') {
@@ -18,11 +18,18 @@ class Validator implements ValidatorInterface
     }
     // file_put_contents('log.json', json_encode($array));
 
-    if ($array['nickname'] === ''){
+    if ($array['nickname'] === '') {
       $errors['nickname'] = "Can't be blank";
     }
+    if ($array['name'] === '') {
+      $errors['name'] = "Can't be blank";
+    }
+    if (empty($array['body'])) {
+      $errors['body'] = "Can't be blank";
+    }
+
     return $errors;
 
-        // END
-    }
+    // END
+  }
 }

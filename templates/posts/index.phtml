@@ -1,8 +1,10 @@
+<a href="<?=$router->urlFor('newPost')?>">Новый пост</a>
+<br>
 <?php
 foreach ($posts as $post) :
     $postLink = "{$router->urlFor('posts')}/{$post['id']}";
     $postName = htmlspecialchars($post['name']);
-    echo "{$post['number']} - <a href='{$postLink}'>{$postName}" . '<br>';
+    echo "{$post['number']} - <a href='{$postLink}'>{$postName}</a>" . '<br>';
 endforeach; ?>
 <br>
 
@@ -10,3 +12,5 @@ endforeach; ?>
     <button name='page' value='<?=$page - 1?>'>Назад</button>
     <button name='page' value='<?=$page + 1?>'>Вперёд</button>
 </form>
+<br>
+<?=$messages['success'][0]?>

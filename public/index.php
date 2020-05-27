@@ -92,10 +92,35 @@ $app->get('/posts', function ($request, $response) use ($repo, $router) {
   $params = [
     'router' => $router,
     'posts' => $posts,
-    'page' => $page
+    'page' => $page,
+    'messages' => $this->get('flash')->getMessages()
   ];
   return $this->get('renderer')->render($response, 'posts/index.phtml', $params);
 })->setName('posts');
+
+$app->get('/posts/new', function ($request, $response) {
+  $params = [];
+  return $this->get('renderer')->render($response, 'posts/new.phtml', $params);
+})->setName('newPost');
+
+$app->post('/posts', function ($request, $response) use ($router, $repo) {
+  $post = $request->getParsedBodyParam('post');
+  $validator = new Validator();
+  $errors = $validator->validate($post);
+  if ($errors) {
+    $params = [
+      'errors' => $errors,
+      'post' => $post
+    ];
+    $response = $response->withStatus(422);
+    return $this->get('renderer')->render($response, 'posts/new.phtml', $params);
+    // return $response->withRedirect($router->urlFor('newPost'), 422);
+  }
+  $repo->save($post);
+  $this->get('flash')->addMessage('success', 'Post has been created');
+  return $response->withRedirect($router->urlFor('posts'));
+});
+
 
 $app->get('/posts/{id}', function ($request, $response, $args) use ($router, $repo) {
   $id = strval($args['id']);
@@ -111,6 +136,5 @@ $app->get('/posts/{id}', function ($request, $response, $args) use ($router, $re
   return $this->get('renderer')->render($response, "posts/show.phtml", $params);
 })->setName('post');
 
-// END
 
 $app->run();

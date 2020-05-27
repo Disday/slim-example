@@ -1,0 +1,10 @@
+<a href="/posts">Посты</a>
+<!-- BEGIN (write your solution here) -->
+<form action='/posts' method="post">
+  Name<input type="text" value="<?=htmlspecialchars($post['name']) ?? ''?>" name="post[name]"><?=$errors['name']?>
+  <br>
+  Body<input type="text" value="<?=htmlspecialchars($post['body']) ?? ''?>" name="post[body]">  <?=$errors['body']?>
+  <br>
+  <input type="submit" value="Publish">
+</form>
+<!-- END -->
