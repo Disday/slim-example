@@ -25,3 +25,6 @@
     <td><?= $user->id ?>
   </tr>
 </table>
+<form action="<?=$router->urlFor('editUser', ['id' => $user->id]) ?>">
+  <input type="submit" value="Edit user">
+</form>

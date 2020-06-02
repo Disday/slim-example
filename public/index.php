@@ -59,6 +59,12 @@ $app->get('/users/{id}', function ($request, $response, $args) use ($router) {
   return $this->get('renderer')->render($response, "users/show.phtml", $params);
 })->setName('user');
 
+$app->get('/users/{id}/edit', function ($request, $response, $args) use ($router) {
+  $params =[];
+  return $this->get('renderer')->render($response, "users/edit.phtml", $params);
+})->setName('editUser');
+
+
 $app->post('/users', function ($request, $response) use ($router) {
   $user = $request->getParsedBodyParam('user');
   $validator = new Validator();
