@@ -1,9 +1,13 @@
-<form action='/users' method="post">
-  Nickname<input type="text" value=""   name="user[nickname]">
-  <?=$errors['nickname']?>
+<a href='<?=$router->urlFor('users')?>'>Пользователи</a>
+<form action='<?=$router->urlFor('updateUser', ['id' => $user->id])?>' method="post">
+  <input hidden name="_METHOD" value="PATCH">
+  Nickname<input type="text" value="<?= htmlspecialchars($user->nickname); ?>" name="user[nickname]">
+  <?= $errors['nickname'] ?>
   <br>
   Email
-  <input type="text" value=""   name="user[email]">
-
+  <input type="text" value="<?= htmlspecialchars($user->email); ?>" name="user[email]">
+  <?= $errors['email'] ?>
+  <br>
   <input type="submit" value="Update">
 </form>
+<div style="color:green"><?= $messages['success'][0] ?></div>

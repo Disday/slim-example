@@ -24,9 +24,13 @@ class Validator implements ValidatorInterface
     if ($array['name'] === '') {
       $errors['name'] = "Can't be blank";
     }
-    if (empty($array['body'])) {
+    if ($array['body'] === '') {
       $errors['body'] = "Can't be blank";
     }
+    if ($array['email'] === '') {
+      $errors['email'] = "Can't be blank";
+    }
+
 
     return $errors;
 
