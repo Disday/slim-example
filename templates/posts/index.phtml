@@ -1,4 +1,4 @@
-<a href="<?=$router->urlFor('newPost')?>">Новый пост</a>
+<a href="<?= $router->urlFor('newPost') ?>">Новый пост</a>
 <br>
 <?php
 foreach ($posts as $post) :
@@ -9,8 +9,12 @@ endforeach; ?>
 <br>
 
 <form method='get'>
-    <button name='page' value='<?=$page - 1?>'>Назад</button>
-    <button name='page' value='<?=$page + 1?>'>Вперёд</button>
+    <button name='page' value='<?= $page - 1 ?>'>Назад</button>
+    <button name='page' value='<?= $page + 1 ?>'>Вперёд</button>
 </form>
 <br>
-<?=$messages['success'][0]?>
+<div style="color:green">
+    <?php foreach ($messages['success'] as $message) :
+        echo $message;
+    endforeach; ?>
+</div>

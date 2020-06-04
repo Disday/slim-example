@@ -92,7 +92,6 @@ $app->patch('/users/{id}/edit', function ($request, $response, $args) use ($rout
     $response = $response->withStatus(422);
     return $this->get('renderer')->render($response, "users/edit.phtml", $params);
   }
-
   $users = explode("\n", file_get_contents('users.json'));
   $users = collect($users);
   $user = $users->map(function ($item, $key) {
@@ -104,8 +103,6 @@ $app->patch('/users/{id}/edit', function ($request, $response, $args) use ($rout
   $users = $users->reject(function ($value, $key) use ($id) {
     return json_decode($value)->id == $id;
   })->push($user);
-  // print_r($user);
-  // print_r($users->dump());
 
   file_put_contents('users.json', '');
   foreach ($users as $user1) :
@@ -116,7 +113,6 @@ $app->patch('/users/{id}/edit', function ($request, $response, $args) use ($rout
   $this->get('flash')->addMessage('success', 'User has been updated');
   $url = $router->urlFor('editUser', ['id' => $id]);
   return $response->withRedirect($url);
-
 })->setName('updateUser');
 
 $app->post('/users', function ($request, $response) use ($router) {
@@ -141,14 +137,13 @@ $app->post('/users', function ($request, $response) use ($router) {
   return $response->withRedirect($router->urlFor('users'), 302);
 });
 
-// BEGIN (write your solution here)
 $app->get('/posts', function ($request, $response) use ($repo, $router) {
   $page = $request->getQueryParam('page');
   if ($page < 1) {
     return $response->withRedirect('/posts?page=1');
   }
   $posts = collect($repo->all())->slice(($page - 1) * 5, 5);
-  file_put_contents('log.json', json_encode($page));
+  // file_put_contents('log.json', json_encode($page));
   $params = [
     'router' => $router,
     'posts' => $posts,
@@ -172,15 +167,13 @@ $app->post('/posts', function ($request, $response) use ($router, $repo) {
       'errors' => $errors,
       'post' => $post
     ];
-    $response = $response->withStatus(422);
-    return $this->get('renderer')->render($response, 'posts/new.phtml', $params);
+    return $this->get('renderer')->render($response->withStatus(422), 'posts/new.phtml', $params);
     // return $response->withRedirect($router->urlFor('newPost'), 422);
   }
   $repo->save($post);
   $this->get('flash')->addMessage('success', 'Post has been created');
   return $response->withRedirect($router->urlFor('posts'));
 });
-
 
 $app->get('/posts/{id}', function ($request, $response, $args) use ($router, $repo) {
   $id = strval($args['id']);
@@ -195,6 +188,41 @@ $app->get('/posts/{id}', function ($request, $response, $args) use ($router, $re
   ];
   return $this->get('renderer')->render($response, "posts/show.phtml", $params);
 })->setName('post');
+
+$app->get('/posts/{id}/edit', function ($request, $response, $args) use ($router, $repo) {
+  $id = $args['id'];
+  $post = $repo->find($id);
+  if (empty($post)) {
+    return $response->withStatus(404)->write('Page not found');
+  }
+  $params = [
+    'router' => $router,
+    'post' => $post
+  ];
+  return $this->get('renderer')->render($response, 'posts/edit.phtml', $params);
+})->setName('editPost');
+
+$app->patch('/posts/{id}', function ($request, $response, $args) use ($router, $repo) {
+  $requestData = $request->getParsedBodyParam('post'); //array
+  $id = $args['id'];
+  $validator = new Validator();
+  $errors = $validator->validate($requestData);
+  if (!empty($errors)) {
+    $requestData['id'] = $id;
+    $params = [
+      'errors' => $errors,
+      'router' => $router,
+      'post' => $requestData
+    ];
+    return $this->get('renderer')->render($response->withStatus(422), 'posts/edit.phtml', $params);
+  }
+  $post = $repo->find($id);
+  $post['name'] = $requestData['name'];
+  $post['body'] = $requestData['body'];
+  $repo->save($post);
+  $this->get('flash')->addMessage('success', 'Post has been updated');
+  return $response->withRedirect($router->urlFor('posts'));
+})->setName('updatePost');
 
 
 $app->run();

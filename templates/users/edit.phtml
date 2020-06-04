@@ -1,4 +1,5 @@
 <a href='<?=$router->urlFor('users')?>'>Пользователи</a>
+
 <form action='<?=$router->urlFor('updateUser', ['id' => $user->id])?>' method="post">
   <input hidden name="_METHOD" value="PATCH">
   Nickname<input type="text" value="<?= htmlspecialchars($user->nickname); ?>" name="user[nickname]">

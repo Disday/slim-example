@@ -4,3 +4,7 @@
 <?=htmlspecialchars($post['name'])?><br>
 <?=htmlspecialchars($post['body'])?>
 <!-- END -->
+
+<form action="<?=$router->urlFor('editPost', ['id' => $post['id']]) ?>">
+  <input type="submit" value="Edit post">
+</form>

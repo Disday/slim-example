@@ -1,0 +1,9 @@
+<a href="/posts">Посты</a>
+
+<!-- BEGIN (write your solution here) -->
+<form action='<?= $router->urlFor('updatePost', ['id' => $post['id']]) ?>' method="post">
+    <input hidden name="_METHOD" value="PATCH">
+    <?php require '_form.phtml' ?>
+    <input type="submit" value="Save">
+</form>
+<!-- END -->
