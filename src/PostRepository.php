@@ -25,6 +25,7 @@ class PostRepository
     public function destroy(string $id)
     {
         unset($_SESSION['posts'][$id]);
+        
     }
 
     public function save(array $item)

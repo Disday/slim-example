@@ -1,20 +1,35 @@
 <a href="<?= $router->urlFor('newPost') ?>">Новый пост</a>
 <br>
-<?php
-foreach ($posts as $post) :
-    $postLink = "{$router->urlFor('posts')}/{$post['id']}";
-    $postName = htmlspecialchars($post['name']);
-    echo "{$post['number']} - <a href='{$postLink}'>{$postName}</a>" . '<br>';
-endforeach; ?>
+<table>
+   <?php
+   foreach ($posts as $post) :
+      $postLink = "{$router->urlFor('posts')}/{$post['id']}";
+      $postName = htmlspecialchars($post['name']); ?>
+      <tr>
+         <td>
+            <?= $post['number'] ?>
+         </td>
+         <td>
+            <a href='<?= $postLink ?>'><?= $postName ?></a>
+         </td>
+         <td>
+            <form method="post" action='<?= $postLink ?>'>
+               <input hidden name="_METHOD" value="DELETE">
+               <button type='submit'>Delete</button>
+            </form>
+         </td>
+      </tr>
+   <?php endforeach; ?>
+</table>
 <br>
 
 <form method='get'>
-    <button name='page' value='<?= $page - 1 ?>'>Назад</button>
-    <button name='page' value='<?= $page + 1 ?>'>Вперёд</button>
+   <button name='page' value='<?= $page - 1 ?>'>Назад</button>
+   <button name='page' value='<?= $page + 1 ?>'>Вперёд</button>
 </form>
 <br>
 <div style="color:green">
-    <?php foreach ($messages['success'] as $message) :
-        echo $message;
-    endforeach; ?>
+   <?php foreach ($messages['success'] as $message) :
+      echo $message;
+   endforeach; ?>
 </div>
