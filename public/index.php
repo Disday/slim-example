@@ -253,5 +253,41 @@ $app->delete('/posts/{id}', function ($request, $response, $args) use ($router, 
    return $response->withRedirect($router->urlFor('posts'));
 });
 
+//Cart
+$app->get('/cart-items', function ($request, $response) {
+   $cart = json_decode($request->getCookieParam('cart', json_encode([])), true);
+   $params = [
+      'cart' => $cart
+   ];
+   return $this->get('renderer')->render($response, 'cart/index.phtml', $params);
+});
+
+$app->post('/cart-items', function ($request, $response) {
+   $cart = json_decode($request->getCookieParam('cart', json_encode([])), true);
+   $item = $request->getParsedBodyParam('item');
+   $id = $item['id'];
+   if (empty($cart[$id])) {
+      $item['count'] += 1;
+      $cart[$id] = $item;
+   } else {
+      $cart[$id]['count'] += 1;
+   }
+   $cookie = json_encode($cart);
+   return $response->withHeader('Set-Cookie', "cart={$cookie}")
+      ->withRedirect('/cart-items');
+})->setName('cartItems');
+
+$app->delete('/cart-items', function ($request, $response) {
+   return $response->withHeader('Set-Cookie', "cart=; Max-Age=-1")
+   ->withRedirect('/cart-items');
+});
+
+$app->get('/test', function ($request, $response) {
+   $name = session_name('QQWASD');
+   session_start();
+   Helper::makeLog('log.json', $_SESSION);
+   return $response->write(var_dump($name));
+});
+
 
 $app->run();
