@@ -131,7 +131,6 @@ $app->patch('/users/{id}/edit', function ($request, $response, $args) use ($rout
    return $response->withRedirect($url);
 })->setName('updateUser');
 
-
 $app->delete('/users/{id}', function ($request, $response, $args) use ($router) {
    $confirm = $request->getParsedBodyParam('confirm');
    $id = $args['id'];
@@ -152,6 +151,29 @@ $app->delete('/users/{id}', function ($request, $response, $args) use ($router) 
    // $params = ['router' => $router];
    return $response->withRedirect($userUrl . '?confirm');
 });
+
+$app->post('/users/login', function ($request, $response, $args) {
+   $logout = $request->getParsedBodyParam('logout');
+   if (isset($logout)) {
+      $_SESSION['user'] = ['logged' => 0];
+      $this->get('flash')->addMessage('success', 'You logged out');
+      return $response->withRedirect('/');
+   }
+   $email = $request->getParsedBodyParam('email');
+   $user = Users::getUsers()->firstWhere('email', $email);
+   if ($user) {
+      session_start();
+      $_SESSION['user'] = [
+         'logged' => 1,
+         'name' => $user->nickname
+      ];
+      $this->get('flash')->addMessage('success', 'You logged in');
+      return $response->withRedirect('/');
+   }
+   $this->get('flash')->addMessage('error', 'Wrong email');
+   return $response->withRedirect('/');
+});
+
 
 
 //Posts
@@ -279,14 +301,7 @@ $app->post('/cart-items', function ($request, $response) {
 
 $app->delete('/cart-items', function ($request, $response) {
    return $response->withHeader('Set-Cookie', "cart=; Max-Age=-1")
-   ->withRedirect('/cart-items');
-});
-
-$app->get('/test', function ($request, $response) {
-   $name = session_name('QQWASD');
-   session_start();
-   Helper::makeLog('log.json', $_SESSION);
-   return $response->write(var_dump($name));
+      ->withRedirect('/cart-items');
 });
 
 

@@ -1,4 +1,30 @@
+<?php
+// print_r($_SESSION);
+echo '<br>';
+$user = $_SESSION['user'];
+$flash = $_SESSION['slimFlash'];
+if ($user['logged'] == 1) { ?>
+    <div style='display:inline;'>
+        <?= htmlspecialchars($user['name']) ?>
+        <form action='/users/login' method="post">
+            <button name='logout' type='submit'>Log out</button>
+        </form>
+    </div>
+
+<?php } else { ?>
+
+    <form method="post" action='/users/login'>
+        Your email <input type='text' name='email'>
+        <button type='submit'>Log in</button>
+    </form>
+
+<?php }
+foreach ($flash as $messages) :
+    foreach ($messages as $message) :
+        echo $message;
+    endforeach;
+endforeach; ?>
+<br>
 <a href="/courses">Курсы</a><br>
 <a href="/users">Пользователи</a><br>
 <a href="/posts">Посты</a>
-

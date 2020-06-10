@@ -10,14 +10,15 @@ class Users
    {
       // $users = explode("\n", file_get_contents('users.json'));
       $users = file('users.json', FILE_IGNORE_NEW_LINES);
-      return collect($users);
+      return collect($users)->map(function ($item) {
+         return json_decode($item);
+      });
    }
    public static function findUser($id)
    {
-      return self::getUsers()->map(function ($item, $key) {
-         return json_decode($item);
-      })->firstWhere('id', $id);
+      return self::getUsers()->firstWhere('id', $id);
    }
+   
    public static function saveUsers($users, string $file)
    {
       file_put_contents($file, '');
