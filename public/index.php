@@ -7,7 +7,7 @@ use Slim\Middleware\MethodOverrideMiddleware;
 use DI\Container;
 // use Users;
 
-session_start();
+// session_start();
 $container = new Container();
 $container->set('renderer', function () {
    return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
@@ -152,28 +152,45 @@ $app->delete('/users/{id}', function ($request, $response, $args) use ($router) 
    return $response->withRedirect($userUrl . '?confirm');
 });
 
-$app->post('/users/login', function ($request, $response, $args) {
-   $logout = $request->getParsedBodyParam('logout');
-   if (isset($logout)) {
-      $_SESSION['user'] = ['logged' => 0];
-      $this->get('flash')->addMessage('success', 'You logged out');
-      return $response->withRedirect('/');
-   }
-   $email = $request->getParsedBodyParam('email');
-   $user = Users::getUsers()->firstWhere('email', $email);
-   if ($user) {
+$users = [
+   ['name' => 'admin', 'passwordDigest' => hash('sha256', 'secret')],
+   ['name' => 'mike', 'passwordDigest' => hash('sha256', 'superpass')],
+   ['name' => 'kate', 'passwordDigest' => hash('sha256', 'strongpass')]
+];
+
+$app->post('/session', function ($request, $response, $args) use ($users) {
+   // $email = $request->getParsedBodyParam('email');
+   $user = $request->getParsedBodyParam('user');
+   $user = [
+      'name' => $user['name'],
+      'passwordDigest' => hash('sha256', $user['password'])
+   ];
+   // $user = Users::getUsers()->firstWhere('email', $email);
+   // Helper::makeLog('log.json', $user);
+   $x = array_search($user, $users);
+   // Helper::makeLog('log1.json', ($x));
+   // Helper::makeLog('log1.json', $user === $users[0]);
+
+   if ($x !== false) {
       session_start();
       $_SESSION['user'] = [
          'logged' => 1,
-         'name' => $user->nickname
+         'name' => $user['name']
       ];
       $this->get('flash')->addMessage('success', 'You logged in');
       return $response->withRedirect('/');
    }
-   $this->get('flash')->addMessage('error', 'Wrong email');
+   $this->get('flash')->addMessage('error', ' Wrong password or name');
    return $response->withRedirect('/');
 });
 
+$app->delete('/session', function ($request, $response, $args) {
+   $sessionName = array_key_first($request->getCookieParams());
+   session_destroy();
+   $_SESSION = [];
+   $this->get('flash')->addMessage('success', 'You logged out');
+   return $response->withHeader('Set-Cookie', "{$sessionName}=; Max-Age=-1")->withRedirect('/');
+});
 
 
 //Posts

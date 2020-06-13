@@ -1,1 +1,6 @@
-NULL
+array(2) {
+  ["name"]=>
+  string(4) "mike"
+  ["passwordDigest"]=>
+  string(64) "9fa7b1c3f5ae1bbcd5a9a444acbeba2c0ce3eeecea3508d25964dac2fb29bd64"
+}

@@ -4,25 +4,27 @@ echo '<br>';
 $user = $_SESSION['user'];
 $flash = $_SESSION['slimFlash'];
 if ($user['logged'] == 1) { ?>
-    <div style='display:inline;'>
-        <?= htmlspecialchars($user['name']) ?>
-        <form action='/users/login' method="post">
-            <button name='logout' type='submit'>Log out</button>
-        </form>
-    </div>
+   <div style='display:inline;'>
+      <?= htmlspecialchars($user['name']) ?>
+      <form action='/session' method="post">
+         <input hidden name="_METHOD" value="DELETE">
+         <button>Sign out</button>
+      </form>
+   </div>
 
 <?php } else { ?>
-
-    <form method="post" action='/users/login'>
-        Your email <input type='text' name='email'>
-        <button type='submit'>Log in</button>
-    </form>
+   Sign in
+   <form method="post" action='/session'>
+      Еmail <input type='text' name='user[name]'>
+      Password <input type='text' name='user[password]'>
+      <button type='submit'>Log in</button>
+   </form>
 
 <?php }
 foreach ($flash as $messages) :
-    foreach ($messages as $message) :
-        echo $message;
-    endforeach;
+   foreach ($messages as $message) :
+      echo $message;
+   endforeach;
 endforeach; ?>
 <br>
 <a href="/courses">Курсы</a><br>

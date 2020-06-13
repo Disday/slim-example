@@ -1,7 +1,7 @@
 <?php
 class Helper
 {
-    public static function makeLog($file, $content)
+    public static function makeLog($file = 'log.json', $content)
     {
         ob_start();
         var_dump($content);
